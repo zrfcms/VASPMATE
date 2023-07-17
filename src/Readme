@@ -1,0 +1,57 @@
+!! VASPMATE Version 1.1.0 (2023.4.1)
+!! COPYRIGHT
+!! Copyright[c] 2022 - 2023, Beihang University, by Z. C. Pan and R. F. Zhang
+
+!! This is a manual about the VASPMATE code development architecture, 
+!! mainly introducing the specific content of each file in the src directory,
+!! which would be helpful for the user to improve the package.
+
+!! main.cpp: Recording the composition of all command line functions of VASPMATE 
+!! and is the entry point of the program.
+   
+!! Eigenval.cpp: Parsing EIGENVAL file to obtain the energy eigenvalues and k-vectors.
+!! Including the relevant properties such as Fermi surface 
+!! and 3d energy band calculations.
+   
+!! kpta.cpp: Generate KPOINTS file normally, including KPPRA, KSPACING and KMESH.
+   
+!! acneb.cpp: Structural differences analysis, linear interpolation and 
+!! post-processing functions needed for neb calculations.
+   
+!! potcar.cpp: Qucik merge for POT files with diffrent methods.
+   
+!! emc.cpp: Caluculate electronic effective mass.
+   
+!! spa_plot.cpp, sv_Chart.cpp: Transform file data of VASPMATE format to SPaMD format
+!! for plotting.
+   
+!! dos.cpp: Parsing DOSCAR file and analyse density of states.
+   
+!! tools.cpp: Tool functions commonly used in VASPMATE code.
+   
+!! band.cpp: Parsing PROCAR file and analyse of band structure.
+   
+!! incar.cpp: Tens of INCAR templates for certain property calculation and the on-site 
+!! editing capability for INCAR parameters.
+   
+!! binio.cpp, fft.cpp, plotWave.cpp, stringops.cpp, wavecar.cpp, wavehigh.cpp: 
+!! Transform wave function in reciprocal space to real space via fast Fourier transform(fft).
+   
+!! Binomial.cpp: Binomial fitting.
+   
+!! bskpt.cpp: Generate KPOINTS file for high-symmetry path in reciprocal space.
+   
+!! chgcar.cpp: Parsing CHGCAR file and analyse Charge density.
+   
+!! cif.cpp: Convert POSCAR and CIF file formats to each other.
+   
+!! outcar.cpp: Parsing OUTCAR file to obtain the information.
+   
+!! potential.cpp: Caluculate the bond length and bond angle.
+   
+!! read_write.cpp: Parsing POSCAR file to get basic crystal structure information.
+   
+!! shermo.cpp, thermo_constants.cpp: Correct the thermo energy calculated by VASP.
+   
+!! structure_operator.cpp: External deformation and symmetry operation of crystal structure.
+

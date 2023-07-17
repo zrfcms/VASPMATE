@@ -1,0 +1,48 @@
+			 ======== Thermo Energy Calculated by VASPMATE ========
+				  =========== Calculate Inparameter =========
+  Temperature(K): 300.000000
+  Pressure(Atm): 1
+  Spin multiplicity(Number of Unpaired electron + 1): 1
+  The treatment of low frequencies:   Raising low frequencies.
+  Raising lower frequencies to  100.000000 (cm^-1)!
+ Note: Only for translation, U is different to H, and CV is different to CP
+
+  Translation contribution is ignored since imode=1
+
+  Rotation contribution is ignored since imode = 1
+
+							======== Vibration ========
+  Vibrational q(V=0):	11.663318
+  Vibrational q(bot):	0.000033
+  Vibrational U(T)-U(0):	6.268747 kJ/mol	1.498267 kcal/mol   =H(T)-H(0)
+  Vibrational U:	38.013126 kJ/mol	9.085355 kcal/mol    =H
+  Vibrational S: 	41.319881 J/mol/K	9.875689 cal/mol/K   -TS:	-2.962707 kcal/mol
+  Vibrational CV:	33.368513 J/mol/K	7.975266 cal/mol/K   =CP
+  Zero-point energy (ZPE):	31.744378 kJ/mol	7.587088 kcal/mol	0.012091 a.u.
+
+							========= Electron ========
+  Electronic q:	0.000000
+  Electronic U:	0.000000 kJ/mol	0.000000 kcal/mol    =H
+  Electronic S:	0.000000 J/mol/K	0.000000 cal/mol/K   -TS:	-0.000000 kcal/mol
+  Electronic CV:	0.000000 J/mol/K	0.000000 cal/mol/K   =CP
+
+							=========== Total =========
+  Total q(V=0):	0.000000E+00
+  Total q(bot):	0.000000E+00
+  Total q(V=0)/NA:	0.000000E+00
+  Total q(bot)/NA:	0.000000E+00
+  Total CV:	33.368513 J/mol/K	7.975266 cal/mol/K
+  Total CP:	33.368513 J/mol/K	7.975266 cal/mol/K
+  Total S:	41.319881 J/mol/K	9.875689 cal/mol/K	-TS:	-12395.964250 J/mol	-0.128475 ev
+  Zero point energy (ZPE):	31.744378 kJ/mol/K	7.587088 kcal/mol	0.012091 a.u.	0.329007 ev
+  Thermal correction to U:	38.013126 kJ/mol/K	9.085355 kcal/mol	0.014478 a.u.	0.393978 ev
+  Thermal correction to H:	38.013126 kJ/mol/K	9.085355 kcal/mol	0.014478 a.u.	0.393978 ev
+  Thermal correction to G:	25.617161 kJ/mol/K	6.122649 kcal/mol	0.009757 a.u.	0.265503 ev
+  Electronic energy:	-24.021781 a.u.	-653.665910 ev
+  Sum of electronic energy and ZPE, namely U/H/G at 0 K:	-24.009690 a.u.	-653.336903 ev
+  Sum of electronic energy and thermal correction to U:	-24.007303 a.u.	-653.271932 ev
+  Sum of electronic energy and thermal correction to H:	-24.007303 a.u.	-653.271932 ev
+  Sum of electronic energy and thermal correction to G:	-24.012024 a.u.	-653.400407 ev
+
+  Thanks to Sobereva!(sobereva@sina.com)
+  More information about Thermol and Gaussian please refer to http://sobereva.com/552 and  https://gaussian.com/thermo/)

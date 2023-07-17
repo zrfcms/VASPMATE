@@ -1,0 +1,16 @@
+High - symmetry points(in fractional coordinates).
+Note on time reversal : The second half of the path is required only if the system does not have time - reversal symmetry
+	  0.000000     0.000000     0.000000  GAMMA
+	  0.500000     0.000000     0.500000  X
+	  0.500000     0.500000     0.500000  L
+	  0.500000     0.250000     0.750000  W
+	  0.750000     0.250000     0.500000  W_2
+	  0.375000     0.375000     0.750000  K
+	  0.625000     0.250000     0.625000  U
+	 -0.500000    -0.000000    -0.500000  X'
+	 -0.500000    -0.500000    -0.500000  L'
+	 -0.500000    -0.250000    -0.750000  W'
+	 -0.750000    -0.250000    -0.500000  W_2'
+	 -0.375000    -0.375000    -0.750000  K'
+	 -0.625000    -0.250000    -0.625000  U'
+suggest path : GAMMA-X-U|K-GAMMA-L-W-X|GAMMA'-X'-U'|K'-GAMMA'-L'-W'-X'

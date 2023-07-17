@@ -1,0 +1,16 @@
+================Thermo Energy Calculation!================
+  Temperature(K): 300.000000
+  Pressure(Atm): 1
+  Spin multiplicity(Number of Unpaired electron + 1): 1
+  The treatment of low frequencies: Raising low frequencies.
+  Raising lower frequencies to  100.000000 (cm^-1)!
+  Molecular Symmetry:NULL!
+ Warning: Cannot identify point group! Assume rotational symmetry number to be 1!
+  Zero point energy (ZPE): 7.587088 kcal/mol 0.329007 ev
+  Thermal correction to U: 9.085355 kcal/mol 0.393978 ev
+  Thermal correction to H: 9.085355 kcal/mol 0.393978 ev
+  Thermal correction to G: 6.122649 kcal/mol 0.265503 ev
+  Total S                : 41.319881 J/mol/K 0.000428 ev/K
+  TS                    : 12395.964250 J/mol 0.128475 ev
+  More calculate details please read Thermol_Info.dat file!
+===========================================================

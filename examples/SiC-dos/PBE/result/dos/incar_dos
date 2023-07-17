@@ -1,0 +1,7 @@
+#Density of States
+IBRION = -1
+NSW = 0  
+ISMEAR = -5
+LORBIT = 11
+NEDOS = 1000
+
