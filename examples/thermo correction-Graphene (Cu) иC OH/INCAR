@@ -1,0 +1,38 @@
+SYSTEM  = Ti3C2
+PREC    = Normal
+ISTART  = 0
+ICHARG  = 2
+#MAGMOM = 2*5 8*5
+IVDW = 12
+# Electronic relaxation
+ENCUT   = 450
+EDIFF   = 1e-4
+#NBANDS = 45
+LREAL  = Auto
+#VOSKOWN = 1
+ALGO = Normal
+#IALGO  = 38
+#ADDGRID = .TRUE.
+#NGX = 34
+
+# Ionic relaxation
+NSW     = 500
+EDIFFG  = -0.03
+ISIF    = 2
+IBRION  = 5  # 2-ions, 3-ions-shape-volume, 4-ions-shape, 7-volume
+POTIM   = 0.05
+NFREE = 2
+#ISYM    = 1
+#SYMPREC = 1E-4 # 1E-5
+#PSTRESS = 1000
+
+# DOS related values
+#EMIN   = 10.0
+#EMAX   = 10.0
+#EFERMI = 0.0
+ISMEAR  = 0
+SIGMA   = 0.2
+
+# Write flags
+LWAVE   = .FALSE.
+LCHARG  = .FALSE.

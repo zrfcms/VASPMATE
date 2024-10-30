@@ -1,0 +1,10 @@
+! Density of States
+  ISPIN     =  1           # 1: non-spin-polarized calculations are performed.               
+# ISPIN     =  2           # 2: spin-polarized calculations (collinear) are performed.       
+  IBRION    = -1                                                                             
+  NSW       =  0                                                                             
+  ISMEAR    = -5                                                                             
+  LORBIT    =  11                                                                            
+  NEDOS     =  1000                                                                          
+# ICHARG    =  11          # Non-selfconsistent calculations; superposition charge densities 
+

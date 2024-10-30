@@ -1,0 +1,4 @@
+VASPMATE will redefine cell from the following matrix.
+  1  1  -2   # must be three integers
+  1  -1  0   # must be three integers
+  1  1  2   # must be three integers

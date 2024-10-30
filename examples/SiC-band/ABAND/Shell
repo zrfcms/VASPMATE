@@ -1,0 +1,555 @@
+#!/bin/bash
+#PBS -N panzhaocheng
+#PBS -l nodes=2:ppn=24
+#PBS -j oe
+#PBS -l walltime=240:00:00
+#PBS -q normal
+
+source /public/software/profile.d/compiler_intel-composer_xe_2015.2.164.sh
+source /public/software/profile.d/mpi_openmpi-1.8.5-intel.sh
+
+cd $PBS_O_WORKDIR
+NP=`cat $PBS_NODEFILE|wc -l`
+
+
+
+
+INPOS=(Pos_1)
+POSPAT="Pos_"
+INPOT=(POT_C POT_Si)
+INELE=(C Si)
+POTYPE="2"
+POTPAT="POT_"
+VASPMATE_DIR="VASPMATE"
+run_VASP="mpirun -np $NP -machinefile $PBS_NODEFILE --mca btl self,sm,openib ~/bin/vasp535 > out"
+Structure_Mode="2"
+CM="0"
+ISTART_r="1"
+ICHAGR_r="2"
+PREC_r="3"
+ENCUT_r="400"
+ADDGRID_r="0"
+EDIFF_r="1.000000e-08"
+ISMEAR_r="0"
+SIGMA_r="5.000000e-02"
+NSW_r="300"
+IBRION_r="2"
+ISIF_r="3"
+EDIFFG_r="-1.500000e-02"
+POTIM_r=" 0.5"
+ISPIN_r="0"
+DFTU_r="0"
+DFTD_r="0"
+IVDW_r="4"
+LDAU_r="0"
+LDATYPE_r="1"
+LDAUL_r=" 2 -1"
+LDAUU_r=" 2 0"
+LDAUJ_r=" 0 0"
+LMAXMIX_r="4"
+KPOINT_MODE_r="1"
+KPOINT_PACK_r="0"
+KMESH_X_r="10"
+KMESH_Y_r="10"
+KMESH_Z_r="10"
+KPPRA_r="8000"
+KSPAC_r="5.000000e-01"
+ISTART_sr="1"
+ICHAGR_sr="2"
+PREC_sr="3"
+ENCUT_sr="400"
+ADDGRID_sr="0"
+EDIFF_sr="1.000000e-08"
+ISMEAR_sr="0"
+SIGMA_sr="5.000000e-02"
+IBRION_sr="2"
+EDIFFG_sr="-1.500000e-02"
+POTIM_sr=" 0.5"
+ISPIN_sr="0"
+DFTU_sr="0"
+DFTD_sr="0"
+NSW_sr="300"
+ISIF_sr="3"
+IVDW_sr="4"
+LDAU_sr="0"
+LDATYPE_sr="1"
+LDAUL_sr=" 2 -1"
+LDAUU_sr=" 2 0"
+LDAUJ_sr=" 0 0"
+LMAXMIX_sr="4"
+KPOINT_MODE_sr="1"
+KPOINT_PACK_sr="0"
+KMESH_X_sr="10"
+KMESH_Y_sr="10"
+KMESH_Z_sr="10"
+KPPRA_sr="8000"
+KSPAC_sr="5.000000e-01"
+Funtional_Mode="0"
+ISTART_g="1"
+ICHAGR_g="2"
+PREC_g="3"
+ENCUT_g="400"
+ADDGRID_g="0"
+EDIFF_g="1.000000e-08"
+ISMEAR_g="0"
+SIGMA_g="5.000000e-02"
+ISPIN_g="1"
+LORBIT_g="11"
+DFTU_g="0"
+DFTD_g="0"
+LDAU_g="0"
+LDATYPE_g="1"
+LDAUL_g=" 2 -1"
+LDAUU_g=" 2 0"
+LDAUJ_g=" 0 0"
+LMAXMIX_g="4"
+ISTART_h="1"
+ICHAGR_h="2"
+PREC_h="3"
+ENCUT_h="400"
+ADDGRID_h="0"
+EDIFF_h="1.000000e-08"
+ISMEAR_h="0"
+SIGMA_h="5.000000e-02"
+LORBIT_h="11"
+LHFCALC="0"
+AEXX="2.500000e-01"
+HFSCREEN="2.000000e-01"
+ALGO=" ALL     "
+TIME="4.000000e-01"
+PRECFOCK=" N      "
+DFTU_h="0"
+DFTD_h="0"
+IVDW_h="4"
+ISPIN_h="0"
+LDAU_h="0"
+LDATYPE_h="1"
+LDAUL_h=" 2 -1"
+LDAUU_h=" 2 0"
+LDAUJ_h=" 0 0"
+LMAXMIX_h="4"
+KLINE="20"
+KPOINT_MODE_h="1"
+KPOINT_PACK_h="0"
+KMESH_X_h="10"
+KMESH_Y_h="10"
+KMESH_Z_h="10"
+KPRA="5.000000e-02"
+KPPRA_h="8000"
+KSPAC_h="5.000000e-01"
+Basic="1"
+Atom="0"
+Element="0"
+0="1"
+Multi="0"
+Sum="0"
+Atoms_List1=" (free format:1,2-3,B,N,all)"
+Atoms_List2=" (free format:1-3,B,N,all)"
+AO=" (free format:1-3 s px N s dx2)"
+Script=~//home/zrfcms11/panzhaocheng/paper/band1/aband/R1/vasp
+#!/bin/bash
+#-------Modifiable-------
+VASPMATE_RUN=${VASPMATE_DIR} #If you do not need to use this program, please set it to an empty path
+WRONG_DATA="" #The format of wrong data
+OUTPUT_FILE="log.sdata" # The output file name
+LINUX_LOG="linux_log" # Print Linux error logs to avoid polluting database files
+VASPMATE_LOG="vaspmate_log" #Print VASPMATE logs to avoid polluting database files
+#------------------------
+
+#-------Immutable--------
+const_label="#data"
+ENERGY_FILE="OUTCAR_ENERGY"
+GAP_FILE="BAND_GAP"
+ELASTIC_FILE="ELADAT"
+FERMI_FILE="FERMI_LEVEL"
+CONVEX_FILE="convex_hull.txt"
+#------------------------
+#prepare potential list
+POTLIST=""
+for INPOT_NAME in ${INPOT}
+do
+POTLIST=${POTLIST}" "${INPOT_NAME}
+done
+
+for INPOS_NAME in ${INPOS}
+do
+
+cp ${INPOS_NAME} ./INPOS
+	
+#generate NEWKPATH & PRIMPOS
+eval ${VASPMATE_RUN} --kpt3d ${KLINE} 
+
+#>>> create POSCAR file
+cp PRIMPOS POSCAR
+cp POSCAR INPOS
+ 
+#>>> create POTCAR file using VASPMATE and the file NEWPOT are created
+if [ -f POTCAR ] ; then
+	rm POTCAR
+	echo " ** Warning: old POTCAR file found and deleted." >> vaspmate.log
+fi
+
+for i in $(head -n 6 POSCAR  | tail -n 1)
+	do
+		if test -f ./$POTPAT$i ; then
+			cat ./$POTPAT$i >> POTCAR
+		else
+			echo " ** Warning: No suitable POTCAR for element '$i' found!! Skipped thiselement." >> vaspmate.log
+		fi
+	done
+		
+if [ ${CM} = 0 ];then 
+	#>>> To relax the atomic position
+	#>>> create INCAR file using VASPMATE and the file incar_rlx are created
+	echo "Calculate Mode Is Relax AND Direct" >> vaspmate.log
+	eval ${VASPMATE_RUN} --i rlx
+
+	#prepare relax_INCAR
+	PREC_NAME=(Low Medium High Normal Single Accurate)
+	ADDGRID_NAME=(.TRUE. .FALSE.)
+	ISPIN_NAME=(2 1)
+	cp incar_rlx INCAR
+	eval ${VASPMATE_RUN} --i_replace ISTART  ${ISTART_r} 
+	eval ${VASPMATE_RUN} --i_replace ICHARG  ${ICHARG_r} 
+	eval ${VASPMATE_RUN} --i_replace PREC    ${PREC_NAME[${PREC_r}]}
+	eval ${VASPMATE_RUN} --i_replace ENCUT   ${ENCUT_r}
+	eval ${VASPMATE_RUN} --i_replace ADDGRID ${ADDGRID_NAME[${ADDGRID_r}]}
+	eval ${VASPMATE_RUN} --i_replace EDIFF   ${EDIFF_r} 
+	eval ${VASPMATE_RUN} --i_replace ISMEAR  ${ISMEAR_r} 
+	eval ${VASPMATE_RUN} --i_replace SIGMA   ${SIGMA_r} 
+	eval ${VASPMATE_RUN} --i_replace NSW     ${NSW_r}
+	eval ${VASPMATE_RUN} --i_replace IBRION  ${IBRION_r}
+	eval ${VASPMATE_RUN} --i_replace ISIF    ${ISIF_r} 						 
+	eval ${VASPMATE_RUN} --i_replace EDIFFG  ${EDIFFG_r}
+	eval ${VASPMATE_RUN} --i_replace POTIM   ${POTIM_r}
+	eval ${VASPMATE_RUN} --i_replace ISPIN   ${ISPIN_NAME[${ISPIN_r}]}
+
+	#DFT+U Parameter
+	LDAU_NAME=(.TRUE. .FALSE.)
+	LDATYPE_NAME=(1 2 4)
+	if [ ${DFTU_r} = 1 ]; then
+	eval ${VASPMATE_RUN} --i_replace LDAU    ${LDAU_NAME[${LDAU_r}]}  
+	eval ${VASPMATE_RUN} --i_replace LDATYPE ${LDATYPE_NAME[${LDATYPE_r}]}
+	eval ${VASPMATE_RUN} --i_replace LDAUL   ${LDAUL_r}  
+	eval ${VASPMATE_RUN} --i_replace LDAUU   ${LDAUU_r}  
+	eval ${VASPMATE_RUN} --i_replace LDAUJ   ${LDAUJ_r}  
+	eval ${VASPMATE_RUN} --i_replace LMAXMIX ${LMAXMIX_r}
+	fi
+
+	#VDW Parameter
+	if [ ${DFTD_r} = 1 ]; then
+	eval ${VASPMATE_RUN} --i_replace IVDW ${IVDW_r}   
+	fi
+
+	#>>> create KPOINTS file using VASPMATE and the file NEWKPT are created
+	KPOINT_PACK_NAME=(Gamma Mo)
+	if [ ${KPOINT_MODE_r} = 0 ]; then
+		eval ${VASPMATE_RUN} --km ${KMESH_X_r} ${KMESH_Y_r} ${KMESH_Z_r} ${KPOINT_PACK_NAME[${KPOINT_PACK_r}]}
+	elif [ ${KPOINT_MODE_r} = 1 ]; then
+		eval ${VASPMATE_RUN} --ka ${KPPRA_r} ${KPOINT_PACK_NAME[${KPOINT_PACK_r}]}
+	elif [ ${KPOINT_MODE_r} = 2 ]; then
+		eval ${VASPMATE_RUN} --kv ${KSPAC_r} ${KPOINT_PACK_NAME[${KPOINT_PACK_r}]}
+	fi  
+
+	cp NEWKPT KPOINTS
+
+	#>>> To run the VASP
+	eval ${run_VASP} >> vasp_rlx.log
+
+	cp CONTCAR INPOS
+
+else
+	echo "Calculate Mode Is Only Direct" >> vaspmate.log
+fi
+
+#----------------------static calculation--------------------------
+cp INPOS POSCAR
+echo "Static self-consistency Calculation!" >> vaspmate.log
+eval ${VASPMATE_RUN} --i stc
+
+#prepare static_INCAR
+PREC_NAME=(Low Medium High Normal Single Accurate)
+ADDGRID_NAME=(.TRUE. .FALSE.)
+ISPIN_NAME=(2 1)
+cp incar_stc INCAR
+eval ${VASPMATE_RUN} --i_replace ISTART  ${ISTART_sr} 
+eval ${VASPMATE_RUN} --i_replace ICHARG  ${ICHARG_sr} 
+eval ${VASPMATE_RUN} --i_replace PREC    ${PREC_NAME[${PREC_sr}]}
+eval ${VASPMATE_RUN} --i_replace ENCUT   ${ENCUT_sr}
+eval ${VASPMATE_RUN} --i_replace ADDGRID ${ADDGRID_NAME[${ADDGRID_sr}]}
+eval ${VASPMATE_RUN} --i_replace EDIFF   ${EDIFF_sr} 
+eval ${VASPMATE_RUN} --i_replace ISMEAR  ${ISMEAR_sr} 
+eval ${VASPMATE_RUN} --i_replace SIGMA   ${SIGMA_sr} 
+eval ${VASPMATE_RUN} --i_replace NSW     ${NSW_sr}
+eval ${VASPMATE_RUN} --i_replace IBRION  ${IBRION_sr}
+eval ${VASPMATE_RUN} --i_replace ISIF    ${ISIF_sr} 						 
+eval ${VASPMATE_RUN} --i_replace EDIFFG  ${EDIFFG_sr}
+eval ${VASPMATE_RUN} --i_replace POTIM   ${POTIM_sr}
+eval ${VASPMATE_RUN} --i_replace ISPIN   ${ISPIN_NAME[${ISPIN_sr}]}
+
+#DFT+U Parameter
+LDAU_NAME=(.TRUE. .FALSE.)
+LDATYPE_NAME=(1 2 4)
+if [ ${DFTU_sr} = 1 ]; then
+eval ${VASPMATE_RUN} --i_replace LDAU    ${LDAU_NAME[${LDAU_sr}]}  
+eval ${VASPMATE_RUN} --i_replace LDATYPE ${LDATYPE_NAME[${LDATYPE_sr}]}
+eval ${VASPMATE_RUN} --i_replace LDAUL   ${LDAUL_sr}  
+eval ${VASPMATE_RUN} --i_replace LDAUU   ${LDAUU_sr}  
+eval ${VASPMATE_RUN} --i_replace LDAUJ   ${LDAUJ_sr}  
+eval ${VASPMATE_RUN} --i_replace LMAXMIX ${LMAXMIX_sr}
+fi
+
+#VDW Parameter
+if [ ${DFTD_sr} = 1 ]; then
+eval ${VASPMATE_RUN} --i_replace IVDW ${IVDW_sr}   
+fi
+
+#>>> create KPOINTS file using VASPMATE and the file NEWKPT are created
+KPOINT_PACK_NAME=(Gamma Mo)
+if [ ${KPOINT_MODE_sr} = 0 ]; then
+	eval ${VASPMATE_RUN} --km ${KMESH_X_sr} ${KMESH_Y_sr} ${KMESH_Z_sr} ${KPOINT_PACK_NAME[${KPOINT_PACK_sr}]}
+elif [ ${KPOINT_MODE_sr} = 1 ]; then
+	eval ${VASPMATE_RUN} --ka ${KPPRA_sr} ${KPOINT_PACK_NAME[${KPOINT_PACK_sr}]}
+elif [ ${KPOINT_MODE_sr} = 2 ]; then
+	eval ${VASPMATE_RUN} --kv ${KSPAC_sr} ${KPOINT_PACK_NAME[${KPOINT_PACK_sr}]}
+fi  
+
+cp NEWKPT KPOINTS
+
+#>>> To run the VASP
+eval ${run_VASP} >> vasp_stc.log
+
+#>>> get the efermi energy from the self-consistent calculation
+${VASPMATE_RUN} --dos -efermi >> FERMI_LEVEL
+
+mkdir band
+cd band
+cp ../CONTCAR POSCAR
+cp ../POTCAR ./
+cp ../CHGCAR ./
+cp ../NEWKPATH ./
+cp ../FERMI_LEVEL ./
+
+#----------------------band calculation--------------------------
+if [ ${Funtional_Mode} = 0 ];then
+	eval ${VASPMATE_RUN} --i pbs
+	cp incar_pbs INCAR
+else
+	eval ${VASPMATE_RUN} --i pbs hse
+	cp incar_pbs_hse INCAR
+fi
+
+#>>> create KPOINTS file using VASPMATE and the file NEWKPT are created
+
+#HSE generate NEWKPT
+if [ ${Funtional_Mode} = 1 ]; then
+	if [ ${KPOINT_MODE_h} = 0 ]; then
+		eval ${VASPMATE_RUN} --kmhse ${KMESH_X_h} ${KMESH_Y_h} ${KMESH_Z_h} ${KPRA} ${KPOINT_PACK_NAME[${KPOINT_PACK_h}]}
+	elif [ ${KPOINT_MODE_h} = 1 ]; then
+		eval ${VASPMATE_RUN} --kahse  ${KPPRA_h} ${KPRA} ${KPOINT_PACK_NAME[${KPOINT_PACK_h}]}
+	elif [ ${KPOINT_MODE_h} = 2 ]; then
+		eval ${VASPMATE_RUN} --kvhse  ${KSPAC_h} ${KPRA} ${KPOINT_PACK_NAME[${KPOINT_PACK_h}]}
+	fi  
+fi
+
+if [ ${Funtional_Mode} = 0 ]; then
+	cp NEWKPATH KPOINTS
+else
+	cp NEWKPT KPOINTS
+fi
+
+#prepare BAND_INCAR
+
+#GGA Parameter
+PREC_NAME=(Low Medium High Normal Single Accurate)
+ADDGRID_NAME=(.TRUE. .FALSE.)
+ISPIN_NAME=(2 1)
+if [ ${Funtional_Mode} = 0 ]; then
+	eval ${VASPMATE_RUN} --i_replace ISTART  ${ISTART_g} 
+	eval ${VASPMATE_RUN} --i_replace ICHARG  ${ICHARG_g} 
+	eval ${VASPMATE_RUN} --i_replace PREC    ${PREC_NAME[${PREC_g}]}
+	eval ${VASPMATE_RUN} --i_replace ENCUT   ${ENCUT_g}
+	eval ${VASPMATE_RUN} --i_replace ADDGRID ${ADDGRID_NAME[${ADDGRID_g}]}
+	eval ${VASPMATE_RUN} --i_replace EDIFF   ${EDIFF_g} 
+	eval ${VASPMATE_RUN} --i_replace ISMEAR  ${ISMEAR_g} 
+	eval ${VASPMATE_RUN} --i_replace SIGMA   ${SIGMA_g} 				 
+	eval ${VASPMATE_RUN} --i_replace ISPIN   ${ISPIN_NAME[${ISPIN_g}]}
+	eval ${VASPMATE_RUN} --i_replace LORBIT  ${LORBIT_g}
+
+	#DFT+U Parameter
+	LDAU_NAME=(.TRUE. .FALSE.)
+	LDATYPE_NAME=(1 2 4)
+	if [ ${DFTU_g} = 1 ]; then
+	eval ${VASPMATE_RUN} --i_replace LDAU    ${LDAU_NAME[${LDAU_g}]}  
+	eval ${VASPMATE_RUN} --i_replace LDATYPE ${LDATYPE_NAME[${LDATYPE_g}]}
+	eval ${VASPMATE_RUN} --i_replace LDAUL   ${LDAUL_g}  
+	eval ${VASPMATE_RUN} --i_replace LDAUU   ${LDAUU_g}  
+	eval ${VASPMATE_RUN} --i_replace LDAUJ   ${LDAUJ_g}  
+	eval ${VASPMATE_RUN} --i_replace LMAXMIX ${LMAXMIX_g}
+	fi
+
+	#VDW Parameter
+	if [ ${DFTD_g} = 1 ]; then
+	eval ${VASPMATE_RUN} --i_replace IVDW ${IVDW_g}   
+	fi
+fi
+
+#HSE Parameter
+PREC_NAME=(Low Medium High Normal Single Accurate)
+ADDGRID_NAME=(.TRUE. .FALSE.)
+LHFCALC_NAME=(.TRUE. .FALSE.)
+ISPIN_NAME=(2 1)
+if [ ${Funtional_Mode} = 1 ]; then
+	eval ${VASPMATE_RUN} --i_replace ISTART    ${ISTART_h} 
+	eval ${VASPMATE_RUN} --i_replace ICHARG    ${ICHARG_h} 
+	eval ${VASPMATE_RUN} --i_replace PREC      ${PREC_NAME[${PREC_h}]}
+	eval ${VASPMATE_RUN} --i_replace ENCUT     ${ENCUT_h}
+	eval ${VASPMATE_RUN} --i_replace ADDGRID   ${ADDGRID_NAME[${ADDGRID_h}]}
+	eval ${VASPMATE_RUN} --i_replace EDIFF     ${EDIFF_h} 
+	eval ${VASPMATE_RUN} --i_replace ISMEAR    ${ISMEAR_h} 
+	eval ${VASPMATE_RUN} --i_replace SIGMA     ${SIGMA_h} 				 
+	eval ${VASPMATE_RUN} --i_replace ISPIN     ${ISPIN_NAME[${ISPIN_h}]}
+	eval ${VASPMATE_RUN} --i_replace LORBIT    ${LORBIT_h}
+	eval ${VASPMATE_RUN} --i_replace LHFCALC   ${LHFCALC_NAME[${LHFCALC}]}
+	eval ${VASPMATE_RUN} --i_replace AEXX      ${AEXX}
+	eval ${VASPMATE_RUN} --i_replace HFSCREEN  ${HFSCREEN}
+	eval ${VASPMATE_RUN} --i_replace ALGO      ${ALGO}
+	eval ${VASPMATE_RUN} --i_replace TIME      ${TIME}
+	eval ${VASPMATE_RUN} --i_replace PRECFOCK  ${PRECFOCK}
+	
+	#DFT+U Parameter
+	LDAU_NAME=(.TRUE. .FALSE.)
+	LDATYPE_NAME=(1 2 4)
+	if [ ${DFTU_h} = 1 ]; then
+	eval ${VASPMATE_RUN} --i_replace LDAU    ${LDAU_NAME[${LDAU_h}]}  
+	eval ${VASPMATE_RUN} --i_replace LDATYPE ${LDATYPE_NAME[${LDATYPE_h}]}
+	eval ${VASPMATE_RUN} --i_replace LDAUL   ${LDAUL_h}  
+	eval ${VASPMATE_RUN} --i_replace LDAUU   ${LDAUU_h}  
+	eval ${VASPMATE_RUN} --i_replace LDAUJ   ${LDAUJ_h}  
+	eval ${VASPMATE_RUN} --i_replace LMAXMIX ${LMAXMIX_h}
+	fi
+
+	#VDW Parameter
+	if [ ${DFTD_h} = 1 ]; then
+	eval ${VASPMATE_RUN} --i_replace IVDW ${IVDW_h}   
+	fi
+fi
+
+eval ${run_VASP} >> vasp.log
+
+#>>> To get BAND 
+#>>> To get basic BAND
+if [ ${Basic} = 1 ]; then
+	if [ ${Funtional_Mode} = 0 ]; then
+		eval ${VASPMATE_RUN} --band -b >> vaspmate.log
+	else
+		eval ${VASPMATE_RUN} --band -hb >> vaspmate.log
+	fi
+fi
+
+#>>> To get each atom BAND
+if [ ${Single_Atom} = 1 ]; then
+	if [ ${Funtional_Mode} = 0 ]; then
+		eval ${VASPMATE_RUN} --band -a ${Atom_Num} >> vaspmate.log
+	else
+		eval ${VASPMATE_RUN} --band -ha ${Atom_Num} >> vaspmate.log
+	fi
+fi
+
+#>>> To get each element BAND
+if [ ${Element} = 1 ]; then
+	if [ ${Funtional_Mode} = 0 ]; then
+		eval ${VASPMATE_RUN} --band -e >> vaspmate.log
+	else
+		eval ${VASPMATE_RUN} --band -he >> vaspmate.log
+	fi
+fi
+
+#>>> To get select Atoms_or_Elements BAND
+if [ ${select_elements} = 1 ]; then
+	if [ ${Funtional_Mode} = 0 ]; then
+		eval ${VASPMATE_RUN} --band -s ${Atoms_List1} >> vaspmate.log
+	else
+		eval ${VASPMATE_RUN} --band -hs ${Atoms_List1} >> vaspmate.log
+	fi
+fi  
+
+#>>> To get Multiple Atoms_or_Elements BAND
+if [ ${Multi} = 1 ]; then
+	if [ ${Funtional_Mode} = 0 ]; then
+		eval ${VASPMATE_RUN} --band -m ${Atoms_List2} >> vaspmate.log
+	else
+		eval ${VASPMATE_RUN} --band -hm ${Atoms_List2} >> vaspmate.log
+	fi
+fi 
+
+#>>> To get Atoms_and_Orbitals BAND
+if [ ${SUM} = 1 ]; then
+	if [ ${Funtional_Mode} = 0 ];then
+		eval ${VASPMATE_RUN} --band -o ${AO} >> vaspmate.log
+	else
+		eval ${VASPMATE_RUN} --band -ho ${AO} >> vaspmate.log
+	fi
+fi  
+
+done
+
+#-------get_data--------
+${VASPMATE_RUN} --band -bg >> $VASPMATE_LOG
+if [ -s $GAP_FILE ];then
+	Character=`grep "Band Character:" $GAP_FILE | awk '{print $3}'`
+	if [ $Character == Metallic ];then
+		direct_gap=$WRONG_DATA
+		band_gap=$WRONG_DATA
+		metallic=2 # 2 : YES 1 : NO
+		VBM=$WRONG_DATA
+		CBM=$WRONG_DATA
+	else
+		metallic=1 # 2 : YES 1 : NO
+		band_gap=`grep "Band Gap (eV):" $GAP_FILE | awk '{print $4}'`
+		if [ $Character == Direct ];then
+			direct_gap=2 # Direct
+		else
+			direct_gap=1 # Indirect
+		fi
+		VBM_x=`grep "Location of VBM:" $GAP_FILE | awk '{print $4}'` 
+		VBM_y=`grep "Location of VBM:" $GAP_FILE | awk '{print $5}'`         
+		VBM_z=`grep "Location of VBM:" $GAP_FILE | awk '{print $6}'`
+		CBM_x=`grep "Location of CBM:" $GAP_FILE | awk '{print $4}'`
+		CBM_y=`grep "Location of CBM:" $GAP_FILE | awk '{print $5}'`
+		CBM_z=`grep "Location of CBM:" $GAP_FILE | awk '{print $6}'`
+	fi
+fi
+if [ ! -s $FERMI_FILE ];then
+	${VASPMATE_RUN} --dos -efermi >> FERMI_LEVEL
+fi
+fermi=`cat $FERMI_FILE`
+
+#-------------------------db--------------------------------
+#-------Redirect output-------
+exec 1>$OUTPUT_FILE 
+exec 2>$LINUX_LOG
+#-----------------------------
+#-----------data-file-------------
+${VASPMATE_RUN} --band -b >> $VASPMATE_LOG
+#-------print_data--------
+echo "$const_label	Description"
+echo "ABAND	This is a calculation for band structure."
+echo "$const_label	band_structure"
+cat BAND.dat
+echo "$const_label	band_gap"
+echo "$band_gap"
+echo "$const_label	direct_gap"
+echo "$direct_gap"
+echo "$const_label	metallic" 
+echo "$metallic"
+echo "$const_label	Fermi_energy"
+echo "$fermi"
+echo "$const_label	VBM_location"
+echo "$VBM_x	$VBM_y	$VBM_z"
+echo "$const_label	CBM_location"
+ echo "$CBM_x	$CBM_y	$CBM_z"
+#END
+date
+echo "Done!
+

@@ -1,0 +1,62 @@
+ running on   48 total cores
+ distrk:  each k-point on   48 cores,    1 groups
+ distr:  one band on    1 cores,   48 groups
+ using from now: INCAR     
+ vasp.5.3.5 31Mar14 (build Oct 01 2015 16:19:09) complex                        
+  
+ POSCAR found type information on POSCAR  Mo S 
+ POSCAR found :  2 types and       3 ions
+ scaLAPACK will be used
+
+ ----------------------------------------------------------------------------- 
+|                                                                             |
+|           W    W    AA    RRRRR   N    N  II  N    N   GGGG   !!!           |
+|           W    W   A  A   R    R  NN   N  II  NN   N  G    G  !!!           |
+|           W    W  A    A  R    R  N N  N  II  N N  N  G       !!!           |
+|           W WW W  AAAAAA  RRRRR   N  N N  II  N  N N  G  GGG   !            |
+|           WW  WW  A    A  R   R   N   NN  II  N   NN  G    G                |
+|           W    W  A    A  R    R  N    N  II  N    N   GGGG   !!!           |
+|                                                                             |
+|      For optimal performance we recommend to set                            |
+|        NCORE= 4 - approx SQRT( number of cores)                             |
+|      NCORE specifies how many cores store one orbital (NPAR=cpu/NCORE).     |
+|      This setting can  greatly improve the performance of VASP for DFT.     |
+|      The default, NPAR=number of cores might be grossly inefficient         |
+|      on modern multi-core architectures or massively parallel machines.     |
+|      Do your own testing !!!!                                               |
+|      Unfortunately you need to use the default for GW and RPA calculations. |
+|      (for HF NCORE is supported but not extensively tested yet)             |
+|                                                                             |
+ ----------------------------------------------------------------------------- 
+
+ LDA part: xc-table for Pade appr. of Perdew
+ POSCAR, INCAR and KPOINTS ok, starting setup
+ FFT: planning ...
+ WAVECAR not read
+ WARNING: random wavefunctions but no delay for mixing, default for NELMDL
+ entering main loop
+       N       E                     dE             d eps       ncg     rms          rms(c)
+DAV:   1     0.364814411595E+02    0.36481E+02   -0.69784E+03  2976   0.233E+02
+DAV:   2    -0.229819041585E+02   -0.59463E+02   -0.59463E+02  4464   0.495E+01
+DAV:   3    -0.233978130961E+02   -0.41591E+00   -0.41591E+00  3024   0.580E+00
+DAV:   4    -0.233999836597E+02   -0.21706E-02   -0.21706E-02  5952   0.418E-01
+DAV:   5    -0.233999837566E+02   -0.96851E-07   -0.96851E-07  2976   0.264E-03    0.246E+01
+DAV:   6    -0.222517067199E+02    0.11483E+01   -0.18262E+01  4464   0.533E+00    0.962E+00
+DAV:   7    -0.220955058355E+02    0.15620E+00   -0.10212E+01  4224   0.414E+00    0.745E+00
+DAV:   8    -0.218047578993E+02    0.29075E+00   -0.29291E+00  4272   0.225E+00    0.982E-01
+DAV:   9    -0.217959070720E+02    0.88508E-02   -0.11410E-01  4800   0.568E-01    0.306E-01
+DAV:  10    -0.217948359504E+02    0.10711E-02   -0.42109E-03  5136   0.145E-01    0.172E-01
+DAV:  11    -0.217944004645E+02    0.43549E-03   -0.66908E-04  4800   0.399E-02    0.456E-02
+DAV:  12    -0.217943626712E+02    0.37793E-04   -0.19943E-04  4608   0.184E-02    0.183E-02
+DAV:  13    -0.217944588203E+02   -0.96149E-04   -0.13641E-04  3648   0.146E-02    0.987E-03
+DAV:  14    -0.217944918627E+02   -0.33042E-04   -0.43316E-06  3120   0.349E-03    0.954E-03
+DAV:  15    -0.217945400079E+02   -0.48145E-04   -0.20684E-05  3552   0.476E-03    0.336E-03
+DAV:  16    -0.217945941815E+02   -0.54174E-04   -0.56858E-06  4176   0.262E-03    0.270E-03
+DAV:  17    -0.217946155104E+02   -0.21329E-04   -0.11996E-06  4224   0.127E-03    0.162E-03
+DAV:  18    -0.217946423112E+02   -0.26801E-04   -0.34173E-06  3456   0.139E-03    0.859E-04
+DAV:  19    -0.217946436954E+02   -0.13842E-05   -0.21859E-08  3984   0.181E-04    0.318E-04
+DAV:  20    -0.217946462615E+02   -0.25661E-05   -0.21018E-07  3120   0.294E-04    0.797E-05
+DAV:  21    -0.217946464135E+02   -0.15199E-06   -0.36112E-09  3600   0.436E-05    0.724E-05
+DAV:  22    -0.217946465121E+02   -0.98564E-07   -0.34804E-09  3216   0.406E-05    0.183E-05
+DAV:  23    -0.217946465165E+02   -0.44058E-08   -0.54041E-11  4464   0.756E-06
+   1 F= -.21794647E+02 E0= -.21794647E+02  d E =-.433887E-13

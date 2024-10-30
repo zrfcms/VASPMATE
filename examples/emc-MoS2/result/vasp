@@ -1,0 +1,17 @@
+#!/bin/bash
+#PBS -N panzhaocheng
+#PBS -l nodes=2:ppn=24
+#PBS -j oe
+#PBS -l walltime=240:00:00
+#PBS -q normal
+
+source /public/software/profile.d/compiler_intel-composer_xe_2015.2.164.sh
+source /public/software/profile.d/mpi_openmpi-1.8.5-intel.sh
+
+cd $PBS_O_WORKDIR
+NP=`cat $PBS_NODEFILE|wc -l`
+
+mpirun -np $NP -machinefile $PBS_NODEFILE --mca btl self,sm,openib ~/bin/vasp535 > out
+
+#mpirun -np 12 -machinefile nodelist /public/software/vasp533/vasp-omp185-intel  >& vasp.log
+

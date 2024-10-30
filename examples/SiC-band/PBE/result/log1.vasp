@@ -1,0 +1,33 @@
+ running on    4 total cores
+ distrk:  each k-point on    4 cores,    1 groups
+ distr:  one band on    1 cores,    4 groups
+ using from now: INCAR     
+ vasp.5.4.4.18Apr17-6-g9f103f2a35 (build May 27 2024 22:40:15) complex          
+  
+ POSCAR found type information on POSCAR  Si C 
+ POSCAR found :  2 types and       2 ions
+ scaLAPACK will be used
+ LDA part: xc-table for Pade appr. of Perdew
+ POSCAR, INCAR and KPOINTS ok, starting setup
+ FFT: planning ...
+ WAVECAR not read
+ entering main loop
+       N       E                     dE             d eps       ncg     rms          rms(c)
+DAV:   1     0.459572765558E+01    0.45957E+01   -0.41733E+03  1352   0.910E+02
+DAV:   2    -0.165183634469E+02   -0.21114E+02   -0.20405E+02  2048   0.101E+02
+DAV:   3    -0.168737950737E+02   -0.35543E+00   -0.35543E+00  1520   0.164E+01
+DAV:   4    -0.168749574875E+02   -0.11624E-02   -0.11624E-02  2168   0.103E+00
+DAV:   5    -0.168749584265E+02   -0.93898E-06   -0.93898E-06  1512   0.176E-02    0.866E+00
+DAV:   6    -0.151174962590E+02    0.17575E+01   -0.75802E+00  1480   0.155E+01    0.380E+00
+DAV:   7    -0.150681856040E+02    0.49311E-01   -0.32299E-01  2112   0.406E+00    0.175E+00
+DAV:   8    -0.150605681141E+02    0.76175E-02   -0.18542E-02  1384   0.125E+00    0.164E-01
+DAV:   9    -0.150608588435E+02   -0.29073E-03   -0.81608E-04  2152   0.245E-01    0.104E-01
+DAV:  10    -0.150609710996E+02   -0.11226E-03   -0.21688E-04  1880   0.116E-01    0.222E-02
+DAV:  11    -0.150609718818E+02   -0.78222E-06   -0.45087E-05  1640   0.411E-02    0.573E-03
+DAV:  12    -0.150609720153E+02   -0.13346E-06   -0.17815E-06  1312   0.103E-02
+   1 F= -.15060972E+02 E0= -.15060972E+02  d E =-.150610E+02
+ curvature:   0.00 expect dE= 0.000E+00 dE for cont linesearch  0.000E+00
+ trial: gam= 0.00000 g(F)=  0.101E-47 g(S)=  0.349E-06 ort = 0.000E+00 (trialstep = 0.100E+01)
+ search vector abs. value=  0.349E-06
+ reached required accuracy - stopping structural energy minimisation
+ writing wavefunctions
