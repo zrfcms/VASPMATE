@@ -11,12 +11,12 @@
 *	* and chemical properties, e.g. Kohn-Sham orbitals, band structure, density of states,         *
 *	* charge density difference, Fermi surface, thermo energy correction, formation enthalpy, etc. *
 *	
-*>>>>>>>>>>>>>>>>>>> Directly run VASPMATE <<<<<<<<<<<<<<<<<<<
+*  >>>>>>>>>>>>>>>>>>> Directly run VASPMATE <<<<<<<<<<<<<<<<<<<
 *	We have prepared the latest version of VASPMATE that can be used directly on Linux, MacOS, and Windows systems. 
 *	If you do not intend to modify the existing code, we strongly recommend using it directly instead of recompiling. 
 *	The specific usage are as follows:
 *	
-*>>>>>>>>>>>>>>>>>>> Using on a Linux system <<<<<<<<<<<<<<<<<<<
+*  >>>>>>>>>>>>>>>>>>> Using on a Linux system <<<<<<<<<<<<<<<<<<<
 *	>>tar -xvf VASPMATE-x.x.x.tar
 *	>>cd VASPMATE-x.x.x
 *	>>cd bin
