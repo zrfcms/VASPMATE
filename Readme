@@ -56,11 +56,11 @@
 *	>>cd bin
 *	>> .\VASPMATE.exe
 *	If the terminal displays the following message, it indicates that VASPMATE can be used normally.
-*	***---------------------------------------VASPMATE Version 2.0.0 (2024.10.28)----------------------------------------***
-*	***     An integrated user-interface program for high-throughput first principles computations through VASP code.    ***
-*	***             Copyright[c] 2022-2024, Beihang University by Zhaocheng Pan, Zhuoye Hu and Ruifeng Zhang.            ***
-*	***                              Please send bugs and suggestions to zrfcms@buaa.edu.cn                              ***
-*	***------------------------------------------------------------------------------------------------------------------***
+****---------------------------------------VASPMATE Version 2.0.0 (2024.10.28)----------------------------------------***
+****     An integrated user-interface program for high-throughput first principles computations through VASP code.    ***
+****             Copyright[c] 2022-2024, Beihang University by Zhaocheng Pan, Zhuoye Hu and Ruifeng Zhang.            ***
+****                              Please send bugs and suggestions to zrfcms@buaa.edu.cn                              ***
+****------------------------------------------------------------------------------------------------------------------***
 *	In particular, if you want to move VASPMATE to another folder, please make sure to copy the three additional .dll files to that folder.
 *	
 *	
@@ -70,9 +70,11 @@
 *	Please note:
 *	1. As a reminder, VASPMATE already provides a ready-to-use version. 
 *	If you do not need to modify the source code, we do not recommend recompiling. 
-*	Although we have compiled and adapted VASPMATE for various computers, we cannot guarantee that unexpected compilation issues will not occur.
+*	Although we have compiled and adapted VASPMATE for various computers, 
+*	we cannot guarantee that unexpected compilation issues will not occur.
 *	2. VASPMATE compilation relies on the fftw library (which we have already included in the folder). 
-*	If you encounter any errors related to fftw during the compilation process, please visit the fftw official website to find solutions.
+*	If you encounter any errors related to fftw during the compilation process, 
+*	please visit the fftw official website to find solutions.
 *	https://www.fftw.org/
 *	
 *	>>>>>>>>>>>>>>>>>>> Compiling on a Linux system <<<<<<<<<<<<<<<<<<<
@@ -101,7 +103,8 @@
 *	>>cd VASPMATE-x.x.x.
 *	>>make
 *	If the following interface appears, it means the compilation is successful:
-*	The installed VASPMATE.exe is saved in the "bin" folder. Other settings and methods of use are the same as for direct use 
+*	The installed VASPMATE.exe is saved in the "bin" folder. 
+*	Other settings and methods of use are the same as for direct use 
 *	(please ensure that VASPMATE.exe and the other three .dll files are in the same folder when using).
 *	
 *	This indicates that you have finished VASPMATE installation successfully!
