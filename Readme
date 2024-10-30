@@ -11,56 +11,97 @@
 *	* and chemical properties, e.g. Kohn-Sham orbitals, band structure, density of states,         *
 *	* charge density difference, Fermi surface, thermo energy correction, formation enthalpy, etc. *
 *	
-*	>>>>>>>>>>>>  EXECUTABLE BINARY FILE  <<<<<<<<<<<<
-*	You can just use the binaries already compiled in the bin directory.
+*>>>>>>>>>>>>>>>>>>> Directly run VASPMATE <<<<<<<<<<<<<<<<<<<
+*	We have prepared the latest version of VASPMATE that can be used directly on Linux, MacOS, and Windows systems. 
+*	If you do not intend to modify the existing code, we strongly recommend using it directly instead of recompiling. 
+*	The specific usage are as follows:
 *	
-*	>>>>>>>>>>>>>>>>>>>   INSTALL   <<<<<<<<<<<<<<<<<<
-*	The following installation environment is requried:
-*	1. MacOs or Linux system (Centos or Ubuntu)
-*	2. g++ version >= 4.7.0
-*	3. Reliance on fftw library http://www.fftw.org/install/windows.html (suggest version: 3.3.8.)
+*>>>>>>>>>>>>>>>>>>> Using on a Linux system <<<<<<<<<<<<<<<<<<<
+*	>>tar -xvf VASPMATE-x.x.x.tar
+*	>>cd VASPMATE-x.x.x
+*	>>cd bin
+*	>> ./VASPMATE
+*	At this time, if the terminal displays the following message, it indicates that VASPMATE can be used normally.
 *	
-*	>>>>>>>>>>>>>>>>   INSTALL FFTW   <<<<<<<<<<<<<<<<
-*	if your environment shows "can't find <fftw.h>", please try "module load fftw" or similar commands. (We suggest it)
-*	or you can try to use the fftw-x.x.x.tar.gz package in your own computer.
+*	***---------------------------------------VASPMATE Version 2.0.0 (2024.10.28)----------------------------------------***
+*	***     An integrated user-interface program for high-throughput first principles computations through VASP code.    ***
+*	***             Copyright[c] 2022-2024, Beihang University by Zhaocheng Pan, Zhuoye Hu and Ruifeng Zhang.            ***
+*	***                              Please send bugs and suggestions to zrfcms@buaa.edu.cn                              ***
+*	***------------------------------------------------------------------------------------------------------------------***
 *	
-*	>>>>>>>>>>>WITH ROOT AUTHORITY<<<<<<<<<<<
-*	(1) $tar -zxvf fftw-x.x.x.tar.gz
-*	(2) cd fftw-x.x.x
-*	(3) ./configure
-*	(4) make
-*	(5) sudo make install
+*	For ease of use, it is recommended to copy VASPMATE to the default search path of the system, such as ~/bin, 
+*	or add the absolute path of VASPMATE to the environment variables as follows:
+*	>>pwd   #get the current directory path
+*	>>echo ‘export PATH= the current directory path:$PATH’ >> ~/.bashrc
+*	>>source ~/.bashrc
+*	After completing the above configuration, the VASPMATE command is readily available in the terminal from any folder.
 *	
-*	>>>>>>>>>>>WITHOUT ROOT AUTHORITY<<<<<<<<<<<
-*	(1) $tar -zxvf fftw-x.x.x.tar.gz
-*	(2) cd fftw-x.x.x
-*	(3) ./configure --prefix=''path'' //where you hope to install
-*	(4) make
-*	(5) make install
-*	if you compile fftw by this way, please modify makefile of VASPMATE here.
-*	!!
-*	FFTW_LIB=''path''/lib
-*	FFTW_INCLUDE=''path''/include
-*	!!
+*	>>>>>>>>>>>>>>>>>>> Using on a MacOS system <<<<<<<<<<<<<<<<<<<
+*	>>tar -xvf VASPMATE-x.x.x.tar
+*	>>cd VASPMATE-x.x.x
+*	>>cd bin
+*	>> ./VASPMATE
+*	If the terminal displays the following message, it indicates that VASPMATE can be used normally.
+*
+*	***---------------------------------------VASPMATE Version 2.0.0 (2024.10.28)----------------------------------------***
+*	***     An integrated user-interface program for high-throughput first principles computations through VASP code.    ***
+*	***             Copyright[c] 2022-2024, Beihang University by Zhaocheng Pan, Zhuoye Hu and Ruifeng Zhang.            ***
+*	***                              Please send bugs and suggestions to zrfcms@buaa.edu.cn                              ***
+*	***------------------------------------------------------------------------------------------------------------------***	
 *	
-*	>>>>>>>>>>>>>>>  INSTALL VASPMATE  <<<<<<<<<<<<<<<
-*	Please install this program as following steps:
-*	$make
+*	>>>>>>>>>>>>>>>>>>> Using on a Windows system <<<<<<<<<<<<<<<<<<<
+*	Next, we will demonstrate the usage in the Windows Shell terminal.
+*	>>tar -xvf VASPMATE-x.x.x.tar
+*	>>cd VASPMATE-x.x.x
+*	>>cd bin
+*	>> .\VASPMATE.exe
+*	If the terminal displays the following message, it indicates that VASPMATE can be used normally.
+*	***---------------------------------------VASPMATE Version 2.0.0 (2024.10.28)----------------------------------------***
+*	***     An integrated user-interface program for high-throughput first principles computations through VASP code.    ***
+*	***             Copyright[c] 2022-2024, Beihang University by Zhaocheng Pan, Zhuoye Hu and Ruifeng Zhang.            ***
+*	***                              Please send bugs and suggestions to zrfcms@buaa.edu.cn                              ***
+*	***------------------------------------------------------------------------------------------------------------------***
+*	In particular, if you want to move VASPMATE to another folder, please make sure to copy the three additional .dll files to that folder.
 *	
-*	>>>>>>>>>>>  ADD ENVIRONMENT VARIABLE  <<<<<<<<<<<
-*	if you successfully cessfully compile the program, please set the environment variable as follow ways:
-*	(1) pwd Get the current path
-*	(2) echo 'export PATH=current path' >> ~/.bashrc
-*	(3) source ~/.bashrc
-*	or you can mv ./bin/VASPMATE /usr/bin (need root authority).
 *	
-*	>>>>>>>>>>>>>>>>>>   USING NOW   <<<<<<<<<<<<<<<<<
-*	Try to input command: VASPMATE 
-*	/*
-*	An efficient program for high - throughput first principles computations as partner of VASP code.
-*	Copyright[c] 2022 - 2023, Beihang University, by Zhaocheng Pan and Ruifeng Zhang
-*	Please send bugsand suggestions to zrfcms@buaa.edu.cn
-*	*/
+*	>>>>>>>>>>>>>>>>>>> Compiling VASPMATE <<<<<<<<<<<<<<<<<<<
+*	As an open-source software, VASPMATE allows users to modify the source code and recompile it for use. 
+*	Below, we provide compilation methods for different systems.
+*	Please note:
+*	1. As a reminder, VASPMATE already provides a ready-to-use version. If you do not need to modify the source code, we do not recommend recompiling. 
+*	Although we have compiled and adapted VASPMATE for various computers, we cannot guarantee that unexpected compilation issues will not occur.
+*	2. VASPMATE compilation relies on the fftw library (which we have already included in the folder). 
+*	If you encounter any errors related to fftw during the compilation process, please visit the fftw official website to find solutions.
+*	https://www.fftw.org/
+*	
+*	>>>>>>>>>>>>>>>>>>> Compiling on a Linux system <<<<<<<<<<<<<<<<<<<
+*	It is assumed that gcc and g++ compilers are already installed by default on Linux systems:
+*	>>tar -xvf VASPMATE-x.x.x.tar
+*	>>cd VASPMATE-x.x.x.
+*	>>make
+*	After completing the above operations, if the following interface appears, it means the compilation is successful:
+*	The installed VASPMATE is saved in the bin folder. Other settings and methods of use are the same as for direct use.
+*	
+*	>>>>>>>>>>>>>>>>>>> Compiling on a MacOS system <<<<<<<<<<<<<<<<<<<
+*	It is assumed that gcc and g++ compilers are already installed by default on MacOS systems:
+*	>>tar -xvf VASPMATE-x.x.x.tar
+*	>>cd VASPMATE-x.x.x.
+*	>>make
+*	After completing the above operations, if the following interface appears, it means the compilation is successful:
+*	The installed VASPMATE is saved in the bin folder. Other settings and methods of use are the same as for direct use.
+*	
+*	>>>>>>>>>>>>>>>>>>> Compiling on a Windows system <<<<<<<<<<<<<<<<<<<
+*	If you need to use VASPMATE in a Windows environment, please install Cygwin software first. 
+*	(Note: When installing Cygwin software, please also download the corresponding libraries for gcc, g++, libfltk, cmake, and make under Cygwin.) 
+*	Then, navigate to the "home" folder under the installation path and copy the VASPMATE-x.x.x.tar file to this folder.
+*	Launch the Cygwin64 Terminal program, and in the new window, enter:
+*	>>tar -xvf VASPMATE-x.x.x.tar
+*	>>cd VASPMATE-x.x.x.
+*	>>make
+*	If the following interface appears, it means the compilation is successful:
+*	The installed VASPMATE.exe is saved in the "bin" folder. Other settings and methods of use are the same as for direct use 
+*	(please ensure that VASPMATE.exe and the other three .dll files are in the same folder when using).
+*	
 *	This indicates that you have finished VASPMATE installation successfully!
 *	
 *	>>>>>>>>>>>>>>>>   ADD POTCAR PATH  <<<<<<<<<<<<<<<

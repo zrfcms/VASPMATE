@@ -1,0 +1,36 @@
+************************************************************************************************************************
+***                                    The syntax format and rules for VASPMATE:                                     ***
+***               VASPMATE <--mode/--module> (inputfile) (outputfile) <-option/-parameter> [list/value]              ***
+************************************************************************************************************************
+***------------------------POSCAR-------------------------|*|--------------------------INCAR-------------------------***
+*** VASPMATE --prim         # Generate Primitive cell     |*| VASPMATE --i/inp -option  # Load Templates             ***
+*** VASPMATE --unit         # Generate Unit cell          |*|          option = rlx/stc/nsc/mds/sar/mag/opt/soc/hse/ ***
+*** VASPMATE --super        # Generate Super cell         |*|          vdw/sic/ecc/bca/elf/fpm/dfp/neb/tsd/dos/pbs/  ***
+*** VASPMATE --ieee         # Generate IEEE cell          |*|          bbs/bcd/scd/pcd/tlp/esp/wfn/tdm/los/...       ***
+*** VASPMATE --vol          # Get cell volume             |*| VASPMATE --ia/id/irm/irp  # keyword/parameter revision ***
+*** VASPMATE --cell         # Get cell info               |*| VASPMATE --is/istd # keyword/parameter standardization ***
+*** VASPMATE --num          # Get atom number             |*| VASPMATE --iu/ldau # LDA+U setting                     ***
+*** VASPMATE --atom         # Get atom info               |*| VASPMATE --im/imag # Magnetic moment setting           ***
+*** VASPMATE --symm         # Get symmetry                |*| VASPMATE --iv/ivdw # VDW+D setting                     ***
+*** VASPMATE --pos2cif/cif2pos  # Transform CIF&POS       |*|-------------------------KPOINTS------------------------***
+*** VASPMATE --fixc/fixa/fixe   # Fix atomic positions    |*| VASPMATE --k/km/kpt/kmesh  # Set KPOINTS by Input      ***
+*** VASPMATE --cartes/direct    # Format Transformation   |*| VASPMATE --ka              # Auto set KPOINTS by KPPRA ***
+*** VASPMATE --sortc/sorte      # Sort atom order         |*| VASPMATE --kv              # Auto set KPOINTS by KSPAC ***
+*** VASPMATE --movc/movd        # Move atom position      |*|--------------------------POTCAR------------------------***
+*** VASPMATE --proj/redef   # Cell Projection/Orientation |*| VASPMATE --pot          # Generate POTCAR via POSCAR   ***
+*** VASPMATE --affine/alias # Cell Deformation            |*| VASPMATE --pote         # Generate POTCAR via Element  ***
+************************************************************************************************************************
+***--------------------------------------------------Module-related--------------------------------------------------***
+*** VASPMATE --std3d/std2d  # Standardize POSCAR for band |*| VASPMATE --3dka/3dkv/3dkm  # 3D band kpoints           ***
+*** VASPMATE --ka3d/ka2d    # Create KPATH for band       |*| VASPMATE --3dbs            # 3D band derivation        ***
+*** VASPMATE --band         # Band-Structure related      |*| VASPMATE --db              # Database Creation         ***
+*** VASPMATE --dos          # DOS-related                 |*| VASPMATE --db2js           # Database Transformation   ***
+*** VASPMATE --bader        # Bader-charge-related        |*| VASPMATE --thermo          # Thermo correction         ***
+*** VASPMATE --neb          # NEB-related                 |*| VASPMATE --enth            # Formation enthalpy        ***
+*** VASPMATE --vcd          # Charge-density-related      |*| VASPMATE --elas/elae       # Elastic Property          ***
+*** VASPMATE --pcd          # Partial-charge-density      |*| VASPMATE --opti            # Optical Property          ***
+*** VASPMATE --wfn          # Wave-function-related       |*| VASPMATE --magn            # Magnetic Property         ***
+*** VASPMATE --fska/fskv/fskm  # Fermi surface kpoints    |*| VASPMATE --sto             # Stochastics Model         ***
+*** VASPMATE --fsxd/fs         # Fermi surface derivation |*| VASPMATE --evo             # Evolutionary Model        ***
+************************************************************************************************************************
+

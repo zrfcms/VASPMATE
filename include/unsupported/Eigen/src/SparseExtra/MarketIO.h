@@ -101,7 +101,7 @@ namespace internal
   template<typename Scalar>
   inline void putVectorElt(std::complex<Scalar> value, std::ofstream& out)
   {
-    out << value.real << " " << value.imag()<< "\n"; 
+    out << value.real() << " " << value.imag()<< "\n"; 
   }
 
 } // end namespace internal
@@ -163,7 +163,7 @@ bool loadMarket(SparseMatrixType& mat, const std::string& filename)
     {
       std::stringstream line(buffer);
       line >> M >> N >> NNZ;
-      if(M > 0 && N > 0 && NNZ > 0) 
+      if(M > 0 && N > 0)
       {
         readsizes = true;
         mat.resize(M,N);

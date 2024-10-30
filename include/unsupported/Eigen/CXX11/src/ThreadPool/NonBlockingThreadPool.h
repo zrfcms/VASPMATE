@@ -29,6 +29,7 @@ class ThreadPoolTempl : public Eigen::ThreadPoolInterface {
         thread_data_(num_threads),
         all_coprimes_(num_threads),
         waiters_(num_threads),
+        global_steal_partition_(EncodePartition(0, num_threads_)),
         blocked_(0),
         spinning_(0),
         done_(false),
@@ -237,6 +238,7 @@ class ThreadPoolTempl : public Eigen::ThreadPoolInterface {
   MaxSizeVector<ThreadData> thread_data_;
   MaxSizeVector<MaxSizeVector<unsigned>> all_coprimes_;
   MaxSizeVector<EventCount::Waiter> waiters_;
+  unsigned global_steal_partition_;
   std::atomic<unsigned> blocked_;
   std::atomic<bool> spinning_;
   std::atomic<bool> done_;
@@ -253,7 +255,9 @@ class ThreadPoolTempl : public Eigen::ThreadPoolInterface {
 #ifndef EIGEN_THREAD_LOCAL
     std::unique_ptr<PerThread> new_pt(new PerThread());
     per_thread_map_mutex_.lock();
-    eigen_plain_assert(per_thread_map_.emplace(GlobalThreadIdHash(), std::move(new_pt)).second);
+    bool insertOK = per_thread_map_.emplace(GlobalThreadIdHash(), std::move(new_pt)).second;
+    eigen_plain_assert(insertOK);
+    EIGEN_UNUSED_VARIABLE(insertOK);
     per_thread_map_mutex_.unlock();
     init_barrier_->Notify();
     init_barrier_->Wait();
@@ -333,8 +337,12 @@ class ThreadPoolTempl : public Eigen::ThreadPoolInterface {
     PerThread* pt = GetPerThread();
     const size_t size = limit - start;
     unsigned r = Rand(&pt->rand);
-    unsigned victim = r % size;
-    unsigned inc = all_coprimes_[size - 1][r % all_coprimes_[size - 1].size()];
+    // Reduce r into [0, size) range, this utilizes trick from
+    // https://lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction/
+    eigen_plain_assert(all_coprimes_[size - 1].size() < (1<<30));
+    unsigned victim = ((uint64_t)r * (uint64_t)size) >> 32;
+    unsigned index = ((uint64_t) all_coprimes_[size - 1].size() * (uint64_t)r) >> 32;
+    unsigned inc = all_coprimes_[size - 1][index];
 
     for (unsigned i = 0; i < size; i++) {
       eigen_plain_assert(start + victim < limit);
@@ -354,6 +362,9 @@ class ThreadPoolTempl : public Eigen::ThreadPoolInterface {
   Task LocalSteal() {
     PerThread* pt = GetPerThread();
     unsigned partition = GetStealPartition(pt->thread_id);
+    // If thread steal partition is the same as global partition, there is no
+    // need to go through the steal loop twice.
+    if (global_steal_partition_ == partition) return Task();
     unsigned start, limit;
     DecodePartition(partition, &start, &limit);
     AssertBounds(start, limit);
@@ -374,11 +385,11 @@ class ThreadPoolTempl : public Eigen::ThreadPoolInterface {
     eigen_plain_assert(!t->f);
     // We already did best-effort emptiness check in Steal, so prepare for
     // blocking.
-    ec_.Prewait(waiter);
+    ec_.Prewait();
     // Now do a reliable emptiness check.
     int victim = NonEmptyQueueIndex();
     if (victim != -1) {
-      ec_.CancelWait(waiter);
+      ec_.CancelWait();
       if (cancelled_) {
         return false;
       } else {
@@ -392,7 +403,7 @@ class ThreadPoolTempl : public Eigen::ThreadPoolInterface {
     blocked_++;
     // TODO is blocked_ required to be unsigned?
     if (done_ && blocked_ == static_cast<unsigned>(num_threads_)) {
-      ec_.CancelWait(waiter);
+      ec_.CancelWait();
       // Almost done, but need to re-check queues.
       // Consider that all queues are empty and all worker threads are preempted
       // right after incrementing blocked_ above. Now a free-standing thread

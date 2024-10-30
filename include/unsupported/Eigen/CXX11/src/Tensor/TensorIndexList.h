@@ -75,10 +75,10 @@ template<Index n> struct NumTraits<type2index<n> >
     MulCost = 1
   };
 
-  EIGEN_DEVICE_FUNC static EIGEN_STRONG_INLINE Real epsilon() { return 0; }
-  EIGEN_DEVICE_FUNC static EIGEN_STRONG_INLINE Real dummy_precision() { return 0; }
-  EIGEN_DEVICE_FUNC static EIGEN_STRONG_INLINE Real highest() { return n; }
-  EIGEN_DEVICE_FUNC static EIGEN_STRONG_INLINE Real lowest() { return n; }
+  EIGEN_DEVICE_FUNC static EIGEN_CONSTEXPR EIGEN_STRONG_INLINE Real epsilon() { return 0; }
+  EIGEN_DEVICE_FUNC static EIGEN_CONSTEXPR EIGEN_STRONG_INLINE Real dummy_precision() { return 0; }
+  EIGEN_DEVICE_FUNC static EIGEN_CONSTEXPR EIGEN_STRONG_INLINE Real highest() { return n; }
+  EIGEN_DEVICE_FUNC static EIGEN_CONSTEXPR EIGEN_STRONG_INLINE Real lowest() { return n; }
 };
 
 namespace internal {
@@ -279,7 +279,7 @@ struct tuple_coeff<0, ValueT> {
   }
   template <typename... T>
   EIGEN_DEVICE_FUNC static constexpr bool value_known_statically(const Index i, const IndexTuple<T...>&) {
-    return is_compile_time_constant<typename IndexTupleExtractor<0, T...>::ValType>::value & (i == 0);
+    return is_compile_time_constant<typename IndexTupleExtractor<0, T...>::ValType>::value && (i == 0);
   }
 
   template <typename... T>
@@ -324,6 +324,17 @@ struct IndexList : internal::IndexTuple<FirstType, OtherTypes...> {
   }
 };
 
+template <typename FirstType, typename... OtherTypes>
+std::ostream& operator<<(std::ostream& os,
+                         const IndexList<FirstType, OtherTypes...>& dims) {
+  os << "[";
+  for (size_t i = 0; i < 1 + sizeof...(OtherTypes); ++i) {
+    if (i > 0) os << ", ";
+    os << dims[i];
+  }
+  os << "]";
+  return os;
+}
 
 template<typename FirstType, typename... OtherTypes>
 constexpr IndexList<FirstType, OtherTypes...> make_index_list(FirstType val1, OtherTypes... other_vals) {
@@ -353,6 +364,7 @@ namespace internal {
 template<typename FirstType, typename... OtherTypes>
 EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Index array_prod(const IndexList<FirstType, OtherTypes...>& sizes) {
   Index result = 1;
+  EIGEN_UNROLL_LOOP
   for (size_t i = 0; i < array_size<IndexList<FirstType, OtherTypes...> >::value; ++i) {
     result *= sizes[i];
   }

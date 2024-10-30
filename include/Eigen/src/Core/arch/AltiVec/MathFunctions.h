@@ -12,8 +12,6 @@
 #ifndef EIGEN_MATH_FUNCTIONS_ALTIVEC_H
 #define EIGEN_MATH_FUNCTIONS_ALTIVEC_H
 
-#include "../Default/GenericPacketMathFunctions.h"
-
 namespace Eigen {
 
 namespace internal {
@@ -28,6 +26,18 @@ template<> EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED
 Packet4f pexp<Packet4f>(const Packet4f& _x)
 {
   return pexp_float(_x);
+}
+
+template<> EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED
+Packet4f psin<Packet4f>(const Packet4f& _x)
+{
+  return psin_float(_x);
+}
+
+template<> EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED
+Packet4f pcos<Packet4f>(const Packet4f& _x)
+{
+  return pcos_float(_x);
 }
 
 #ifndef EIGEN_COMP_CLANG
@@ -65,6 +75,13 @@ Packet2d pexp<Packet2d>(const Packet2d& _x)
   return pexp_double(_x);
 }
 #endif
+
+// Hyperbolic Tangent function.
+template <>
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED Packet4f
+ptanh<Packet4f>(const Packet4f& x) {
+  return internal::generic_fast_tanh_float(x);
+}
 
 }  // end namespace internal
 

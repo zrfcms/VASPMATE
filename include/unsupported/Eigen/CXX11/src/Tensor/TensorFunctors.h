@@ -192,17 +192,19 @@ struct MinMaxBottomValue<T, false, false> {
 };
 
 
-template <typename T> struct MaxReducer
+template <typename T, int NaNPropagation=PropagateFast> struct MaxReducer
 {
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void reduce(const T t, T* accum) const {
-    if (t > *accum) { *accum = t; }
+    scalar_max_op<T, T, NaNPropagation> op;
+    *accum = op(t, *accum);
   }
   template <typename Packet>
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void reducePacket(const Packet& p, Packet* accum) const {
-    (*accum) = pmax<Packet>(*accum, p);
+    scalar_max_op<T, T, NaNPropagation> op;
+    (*accum) = op.packetOp(*accum, p);
   }
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE T initialize() const {
-    return MinMaxBottomValue<T, true, Eigen::NumTraits<T>::IsInteger>::bottom_value();
+    return MinMaxBottomValue<T, /*IsMax=*/true, Eigen::NumTraits<T>::IsInteger>::bottom_value();
   }
   template <typename Packet>
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet initializePacket() const {
@@ -217,32 +219,34 @@ template <typename T> struct MaxReducer
   }
   template <typename Packet>
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE T finalizeBoth(const T saccum, const Packet& vaccum) const {
-    return numext::maxi(saccum, predux_max(vaccum));
+    scalar_max_op<T, T, NaNPropagation> op;
+    return op(saccum, op.predux(vaccum));
   }
 };
 
-template <typename T, typename Device>
-struct reducer_traits<MaxReducer<T>, Device> {
+template <typename T, typename Device, int NaNPropagation>
+    struct reducer_traits<MaxReducer<T, NaNPropagation>, Device> {
   enum {
     Cost = NumTraits<T>::AddCost,
     PacketAccess = PacketType<T, Device>::HasMax,
     IsStateful = false,
-    IsExactlyAssociative = true
+    IsExactlyAssociative = (NaNPropagation!=PropagateFast)
   };
 };
 
-
-template <typename T> struct MinReducer
+template <typename T, int NaNPropagation=PropagateFast> struct MinReducer
 {
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void reduce(const T t, T* accum) const {
-    if (t < *accum) { *accum = t; }
+    scalar_min_op<T, T, NaNPropagation> op;
+    *accum = op(t, *accum);
   }
   template <typename Packet>
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void reducePacket(const Packet& p, Packet* accum) const {
-    (*accum) = pmin<Packet>(*accum, p);
+    scalar_min_op<T, T, NaNPropagation> op;
+    (*accum) = op.packetOp(*accum, p);
   }
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE T initialize() const {
-    return MinMaxBottomValue<T, false, Eigen::NumTraits<T>::IsInteger>::bottom_value();
+    return MinMaxBottomValue<T, /*IsMax=*/false, Eigen::NumTraits<T>::IsInteger>::bottom_value();
   }
   template <typename Packet>
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Packet initializePacket() const {
@@ -257,20 +261,20 @@ template <typename T> struct MinReducer
   }
   template <typename Packet>
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE T finalizeBoth(const T saccum, const Packet& vaccum) const {
-    return numext::mini(saccum, predux_min(vaccum));
+    scalar_min_op<T, T, NaNPropagation> op;
+    return op(saccum, op.predux(vaccum));
   }
 };
 
-template <typename T, typename Device>
-struct reducer_traits<MinReducer<T>, Device> {
+template <typename T, typename Device, int NaNPropagation>
+    struct reducer_traits<MinReducer<T, NaNPropagation>, Device> {
   enum {
     Cost = NumTraits<T>::AddCost,
     PacketAccess = PacketType<T, Device>::HasMin,
     IsStateful = false,
-    IsExactlyAssociative = true
+    IsExactlyAssociative = (NaNPropagation!=PropagateFast)
   };
 };
-
 
 template <typename T> struct ProdReducer
 {
@@ -282,7 +286,6 @@ template <typename T> struct ProdReducer
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void reducePacket(const Packet& p, Packet* accum) const {
     (*accum) = pmul<Packet>(*accum, p);
   }
-
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE T initialize() const {
     internal::scalar_cast_op<int, T> conv;
     return conv(1);
@@ -362,12 +365,16 @@ struct reducer_traits<OrReducer, Device> {
   };
 };
 
-
-// Argmin/Argmax reducers
+// Argmin/Argmax reducers.  Returns the first occurrence if multiple locations
+// contain the same min/max value.
 template <typename T> struct ArgMaxTupleReducer
 {
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void reduce(const T t, T* accum) const {
-    if (t.second > accum->second) { *accum = t; }
+    if (t.second < accum->second) {
+      return;
+    } else if (t.second > accum->second || accum->first > t.first ) {
+      *accum = t;
+    }
   }
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE T initialize() const {
     return T(0, NumTraits<typename T::second_type>::lowest());
@@ -391,7 +398,11 @@ struct reducer_traits<ArgMaxTupleReducer<T>, Device> {
 template <typename T> struct ArgMinTupleReducer
 {
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void reduce(const T& t, T* accum) const {
-    if (t.second < accum->second) { *accum = t; }
+    if (t.second > accum->second) {
+      return;
+    } else if (t.second < accum->second || accum->first > t.first) {
+      *accum = t;
+    }
   }
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE T initialize() const {
     return T(0, NumTraits<typename T::second_type>::highest());
@@ -421,6 +432,7 @@ class GaussianGenerator {
                                       const array<T, NumDims>& std_devs)
       : m_means(means)
   {
+    EIGEN_UNROLL_LOOP
     for (size_t i = 0; i < NumDims; ++i) {
       m_two_sigmas[i] = std_devs[i] * std_devs[i] * 2;
     }
@@ -428,6 +440,7 @@ class GaussianGenerator {
 
   EIGEN_DEVICE_FUNC T operator()(const array<Index, NumDims>& coordinates) const {
     T tmp = T(0);
+    EIGEN_UNROLL_LOOP
     for (size_t i = 0; i < NumDims; ++i) {
       T offset = coordinates[i] - m_means[i];
       tmp += offset * offset / m_two_sigmas[i];

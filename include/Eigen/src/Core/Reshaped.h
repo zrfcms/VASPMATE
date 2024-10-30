@@ -44,6 +44,7 @@ namespace Eigen {
   */
 
 namespace internal {
+
 template<typename XprType, int Rows, int Cols, int Order>
 struct traits<Reshaped<XprType, Rows, Cols, Order> > : traits<XprType>
 {
@@ -191,7 +192,7 @@ class ReshapedImpl_dense<XprType,Rows,Cols,Order,false>
     /** \returns the nested expression */
     EIGEN_DEVICE_FUNC
     typename internal::remove_reference<XprType>::type&
-    nestedExpression() { return m_xpr.const_cast_derived(); }
+    nestedExpression() { return m_xpr; }
 
   protected:
 
@@ -239,14 +240,14 @@ class ReshapedImpl_dense<XprType, Rows, Cols, Order, true>
     XprType& nestedExpression() { return m_xpr; }
 
     /** \sa MapBase::innerStride() */
-    EIGEN_DEVICE_FUNC
+    EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR
     inline Index innerStride() const
     {
       return m_xpr.innerStride();
     }
 
     /** \sa MapBase::outerStride() */
-    EIGEN_DEVICE_FUNC
+    EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR
     inline Index outerStride() const
     {
       return ((Flags&RowMajorBit)==RowMajorBit) ? this->cols() : this->rows();

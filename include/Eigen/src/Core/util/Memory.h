@@ -82,7 +82,8 @@ inline void throw_std_bad_alloc()
     //
     new int[huge];
     #else
-    ::operator new(huge);
+    void* unused = ::operator new(huge);
+    EIGEN_UNUSED_VARIABLE(unused);
     #endif
   #endif
 }
@@ -99,12 +100,9 @@ inline void throw_std_bad_alloc()
 EIGEN_DEVICE_FUNC inline void* handmade_aligned_malloc(std::size_t size, std::size_t alignment = EIGEN_DEFAULT_ALIGN_BYTES)
 {
   eigen_assert(alignment >= sizeof(void*) && (alignment & (alignment-1)) == 0 && "Alignment must be at least sizeof(void*) and a power of 2");
-  
-#if defined(EIGEN_HIP_DEVICE_COMPILE)
-  void *original = ::malloc(size+alignment);
-#else
-  void *original = std::malloc(size+alignment);
-#endif
+
+  EIGEN_USING_STD(malloc)
+  void *original = malloc(size+alignment);
   
   if (original == 0) return 0;
   void *aligned = reinterpret_cast<void*>((reinterpret_cast<std::size_t>(original) & ~(std::size_t(alignment-1))) + alignment);
@@ -116,11 +114,8 @@ EIGEN_DEVICE_FUNC inline void* handmade_aligned_malloc(std::size_t size, std::si
 EIGEN_DEVICE_FUNC inline void handmade_aligned_free(void *ptr)
 {
   if (ptr) {
-#if defined(EIGEN_HIP_DEVICE_COMPILE)
-    ::free(*(reinterpret_cast<void**>(ptr) - 1));
-#else
-    std::free(*(reinterpret_cast<void**>(ptr) - 1));
-#endif
+    EIGEN_USING_STD(free)
+    free(*(reinterpret_cast<void**>(ptr) - 1));
   }
 }
 
@@ -183,11 +178,8 @@ EIGEN_DEVICE_FUNC inline void* aligned_malloc(std::size_t size)
   void *result;
   #if (EIGEN_DEFAULT_ALIGN_BYTES==0) || EIGEN_MALLOC_ALREADY_ALIGNED
 
-    #if defined(EIGEN_HIP_DEVICE_COMPILE)
-    result = ::malloc(size);
-    #else
-    result = std::malloc(size);
-    #endif
+    EIGEN_USING_STD(malloc)
+    result = malloc(size);
 
     #if EIGEN_DEFAULT_ALIGN_BYTES==16
     eigen_assert((size<16 || (std::size_t(result)%16)==0) && "System's malloc returned an unaligned pointer. Compile with EIGEN_MALLOC_ALREADY_ALIGNED=0 to fallback to handmade aligned memory allocator.");
@@ -207,11 +199,8 @@ EIGEN_DEVICE_FUNC inline void aligned_free(void *ptr)
 {
   #if (EIGEN_DEFAULT_ALIGN_BYTES==0) || EIGEN_MALLOC_ALREADY_ALIGNED
 
-    #if defined(EIGEN_HIP_DEVICE_COMPILE)
-    ::free(ptr);
-    #else
-    std::free(ptr);
-    #endif
+    EIGEN_USING_STD(free)
+    free(ptr);
 
   #else
     handmade_aligned_free(ptr);
@@ -225,7 +214,7 @@ EIGEN_DEVICE_FUNC inline void aligned_free(void *ptr)
   */
 inline void* aligned_realloc(void *ptr, std::size_t new_size, std::size_t old_size)
 {
-  EIGEN_UNUSED_VARIABLE(old_size);
+  EIGEN_UNUSED_VARIABLE(old_size)
 
   void *result;
 #if (EIGEN_DEFAULT_ALIGN_BYTES==0) || EIGEN_MALLOC_ALREADY_ALIGNED
@@ -256,11 +245,8 @@ template<> EIGEN_DEVICE_FUNC inline void* conditional_aligned_malloc<false>(std:
 {
   check_that_malloc_is_allowed();
 
-  #if defined(EIGEN_HIP_DEVICE_COMPILE)
-  void *result = ::malloc(size);
-  #else
-  void *result = std::malloc(size);
-  #endif
+  EIGEN_USING_STD(malloc)
+  void *result = malloc(size);
 
   if(!result && size)
     throw_std_bad_alloc();
@@ -275,11 +261,8 @@ template<bool Align> EIGEN_DEVICE_FUNC inline void conditional_aligned_free(void
 
 template<> EIGEN_DEVICE_FUNC inline void conditional_aligned_free<false>(void *ptr)
 {
-  #if defined(EIGEN_HIP_DEVICE_COMPILE)
-  ::free(ptr);
-  #else
-  std::free(ptr);
-  #endif
+  EIGEN_USING_STD(free)
+  free(ptr);
 }
 
 template<bool Align> inline void* conditional_aligned_realloc(void* ptr, std::size_t new_size, std::size_t old_size)
@@ -378,7 +361,7 @@ template<typename T, bool Align> EIGEN_DEVICE_FUNC inline T* conditional_aligned
 template<typename T> EIGEN_DEVICE_FUNC inline void aligned_delete(T *ptr, std::size_t size)
 {
   destruct_elements_of_array<T>(ptr, size);
-  aligned_free(ptr);
+  Eigen::internal::aligned_free(ptr);
 }
 
 /** \internal Deletes objects constructed with conditional_aligned_new
@@ -540,11 +523,8 @@ template<typename T> struct smart_copy_helper<T,true> {
     IntPtr size = IntPtr(end)-IntPtr(start);
     if(size==0) return;
     eigen_internal_assert(start!=0 && end!=0 && target!=0);
-    #if defined(EIGEN_HIP_DEVICE_COMPILE)
-    ::memcpy(target, start, size);
-    #else
-    std::memcpy(target, start, size);
-    #endif
+    EIGEN_USING_STD(memcpy)
+    memcpy(target, start, size);
   }
 };
 
@@ -586,6 +566,17 @@ template<typename T> struct smart_memmove_helper<T,false> {
   }
 };
 
+#if EIGEN_HAS_RVALUE_REFERENCES
+template<typename T> EIGEN_DEVICE_FUNC T* smart_move(T* start, T* end, T* target)
+{
+  return std::move(start, end, target);
+}
+#else
+template<typename T> EIGEN_DEVICE_FUNC T* smart_move(T* start, T* end, T* target)
+{
+  return std::copy(start, end, target);
+}
+#endif
 
 /*****************************************************************************
 *** Implementation of runtime stack allocation (falling back to malloc)    ***
@@ -789,32 +780,56 @@ template<typename T> void swap(scoped_array<T> &a,scoped_array<T> &b)
 *** Implementation of EIGEN_MAKE_ALIGNED_OPERATOR_NEW [_IF]                ***
 *****************************************************************************/
 
-#if EIGEN_MAX_ALIGN_BYTES!=0
+#if EIGEN_HAS_CXX17_OVERALIGN
+
+// C++17 -> no need to bother about alignment anymore :)
+
+#define EIGEN_MAKE_ALIGNED_OPERATOR_NEW_NOTHROW(NeedsToAlign)
+#define EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(NeedsToAlign)
+#define EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+#define EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF_VECTORIZABLE_FIXED_SIZE(Scalar,Size)
+
+#else
+
+// HIP does not support new/delete on device.
+#if EIGEN_MAX_ALIGN_BYTES!=0 && !defined(EIGEN_HIP_DEVICE_COMPILE)
   #define EIGEN_MAKE_ALIGNED_OPERATOR_NEW_NOTHROW(NeedsToAlign) \
+      EIGEN_DEVICE_FUNC \
       void* operator new(std::size_t size, const std::nothrow_t&) EIGEN_NO_THROW { \
         EIGEN_TRY { return Eigen::internal::conditional_aligned_malloc<NeedsToAlign>(size); } \
         EIGEN_CATCH (...) { return 0; } \
       }
   #define EIGEN_MAKE_ALIGNED_OPERATOR_NEW_IF(NeedsToAlign) \
+      EIGEN_DEVICE_FUNC \
       void *operator new(std::size_t size) { \
         return Eigen::internal::conditional_aligned_malloc<NeedsToAlign>(size); \
       } \
+      EIGEN_DEVICE_FUNC \
       void *operator new[](std::size_t size) { \
         return Eigen::internal::conditional_aligned_malloc<NeedsToAlign>(size); \
       } \
+      EIGEN_DEVICE_FUNC \
       void operator delete(void * ptr) EIGEN_NO_THROW { Eigen::internal::conditional_aligned_free<NeedsToAlign>(ptr); } \
+      EIGEN_DEVICE_FUNC \
       void operator delete[](void * ptr) EIGEN_NO_THROW { Eigen::internal::conditional_aligned_free<NeedsToAlign>(ptr); } \
+      EIGEN_DEVICE_FUNC \
       void operator delete(void * ptr, std::size_t /* sz */) EIGEN_NO_THROW { Eigen::internal::conditional_aligned_free<NeedsToAlign>(ptr); } \
+      EIGEN_DEVICE_FUNC \
       void operator delete[](void * ptr, std::size_t /* sz */) EIGEN_NO_THROW { Eigen::internal::conditional_aligned_free<NeedsToAlign>(ptr); } \
       /* in-place new and delete. since (at least afaik) there is no actual   */ \
       /* memory allocated we can safely let the default implementation handle */ \
       /* this particular case. */ \
+      EIGEN_DEVICE_FUNC \
       static void *operator new(std::size_t size, void *ptr) { return ::operator new(size,ptr); } \
+      EIGEN_DEVICE_FUNC \
       static void *operator new[](std::size_t size, void* ptr) { return ::operator new[](size,ptr); } \
+      EIGEN_DEVICE_FUNC \
       void operator delete(void * memory, void *ptr) EIGEN_NO_THROW { return ::operator delete(memory,ptr); } \
+      EIGEN_DEVICE_FUNC \
       void operator delete[](void * memory, void *ptr) EIGEN_NO_THROW { return ::operator delete[](memory,ptr); } \
       /* nothrow-new (returns zero instead of std::bad_alloc) */ \
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW_NOTHROW(NeedsToAlign) \
+      EIGEN_DEVICE_FUNC \
       void operator delete(void *ptr, const std::nothrow_t&) EIGEN_NO_THROW { \
         Eigen::internal::conditional_aligned_free<NeedsToAlign>(ptr); \
       } \
@@ -830,6 +845,8 @@ template<typename T> void swap(scoped_array<T> &a,scoped_array<T> &b)
         (((EIGEN_MAX_ALIGN_BYTES>=16) && ((sizeof(Scalar)*(Size))%(EIGEN_MAX_ALIGN_BYTES  )==0)) ||    \
          ((EIGEN_MAX_ALIGN_BYTES>=32) && ((sizeof(Scalar)*(Size))%(EIGEN_MAX_ALIGN_BYTES/2)==0)) ||    \
          ((EIGEN_MAX_ALIGN_BYTES>=64) && ((sizeof(Scalar)*(Size))%(EIGEN_MAX_ALIGN_BYTES/4)==0))   )))
+
+#endif
 
 /****************************************************************************/
 
@@ -1055,20 +1072,32 @@ inline void queryCacheSizes_intel(int& l1, int& l2, int& l3, int max_std_funcs)
 {
   if(max_std_funcs>=4)
     queryCacheSizes_intel_direct(l1,l2,l3);
-  else
+  else if(max_std_funcs>=2)
     queryCacheSizes_intel_codes(l1,l2,l3);
+  else
+    l1 = l2 = l3 = 0;
 }
 
 inline void queryCacheSizes_amd(int& l1, int& l2, int& l3)
 {
   int abcd[4];
   abcd[0] = abcd[1] = abcd[2] = abcd[3] = 0;
-  EIGEN_CPUID(abcd,0x80000005,0);
-  l1 = (abcd[2] >> 24) * 1024; // C[31:24] = L1 size in KB
-  abcd[0] = abcd[1] = abcd[2] = abcd[3] = 0;
-  EIGEN_CPUID(abcd,0x80000006,0);
-  l2 = (abcd[2] >> 16) * 1024; // C[31;16] = l2 cache size in KB
-  l3 = ((abcd[3] & 0xFFFC000) >> 18) * 512 * 1024; // D[31;18] = l3 cache size in 512KB
+  
+  // First query the max supported function.
+  EIGEN_CPUID(abcd,0x80000000,0);
+  if(static_cast<numext::uint32_t>(abcd[0]) >= static_cast<numext::uint32_t>(0x80000006))
+  {
+    EIGEN_CPUID(abcd,0x80000005,0);
+    l1 = (abcd[2] >> 24) * 1024; // C[31:24] = L1 size in KB
+    abcd[0] = abcd[1] = abcd[2] = abcd[3] = 0;
+    EIGEN_CPUID(abcd,0x80000006,0);
+    l2 = (abcd[2] >> 16) * 1024; // C[31;16] = l2 cache size in KB
+    l3 = ((abcd[3] & 0xFFFC000) >> 18) * 512 * 1024; // D[31;18] = l3 cache size in 512KB
+  }
+  else
+  {
+    l1 = l2 = l3 = 0;
+  }
 }
 #endif
 
@@ -1084,7 +1113,7 @@ inline void queryCacheSizes(int& l1, int& l2, int& l3)
 
   // identify the CPU vendor
   EIGEN_CPUID(abcd,0x0,0);
-  int max_std_funcs = abcd[1];
+  int max_std_funcs = abcd[0];
   if(cpuid_is_vendor(abcd,GenuineIntel))
     queryCacheSizes_intel(l1,l2,l3,max_std_funcs);
   else if(cpuid_is_vendor(abcd,AuthenticAMD) || cpuid_is_vendor(abcd,AMDisbetter_))
